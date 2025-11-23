@@ -28,8 +28,10 @@ struct SwitchAppRootScreenAction {
         }
         currentScreen.wrappedValue = screen
     }
-    
-    private func assertionFailure(_ message: String) {
+}
+
+private extension SwitchAppRootScreenAction {
+    func assertionFailure(_ message: String) {
         // Preview中にassertionFailureが呼ばれるとPreviewがクラッシュしてしまうのでその対処。
         if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
             print(message)
