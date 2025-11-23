@@ -15,19 +15,32 @@ enum AppRootScreen {
 }
 
 struct SwitchAppRootScreenAction {
-    private var currentScreen: Binding<AppRootScreen>
+    private var currentScreen: Binding<AppRootScreen>?
     
-    init(currentScreen: Binding<AppRootScreen>) {
+    init(currentScreen: Binding<AppRootScreen>?) {
         self.currentScreen = currentScreen
     }
     
     func callAsFunction(to screen: AppRootScreen) {
+        guard let currentScreen else {
+            assertionFailure("SwitchAppRootScreenActionでcurrentScreenが設定されていません。")
+            return
+        }
         currentScreen.wrappedValue = screen
+    }
+    
+    private func assertionFailure(_ message: String) {
+        // Preview中にassertionFailureが呼ばれるとPreviewがクラッシュしてしまうのでその対処。
+        if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
+            print(message)
+        } else {
+            Swift.assertionFailure(message)
+        }
     }
 }
 
 extension EnvironmentValues {
-    @Entry var switchAppRootScreen: SwitchAppRootScreenAction = .init(currentScreen: .constant(.splash))
+    @Entry var switchAppRootScreen: SwitchAppRootScreenAction = .init(currentScreen: nil)
 }
 
 struct AppRootView: View {
